@@ -18,14 +18,20 @@ parser.add_argument(
 parser.add_argument(
     "-b, --bymonth", action="store_true", default=False,
     dest="bymonth",
-    help='Creats a new sheet for each month named MMM YYYY (ex: Jun 2018)'
+    help='Creates a new sheet for each month named MMM YYYY (ex: Jun 2018)'
 )
+parser.add_argument(
+    "-c, --client", action="store", default="Default",
+    dest="client",
+    help='Sets the name of the client in the spreadsheet (useful if running in multiple locations)'
+)
+
 
 cliarg = parser.parse_args()
 
 # Set constants
 DATE = datetime.datetime.now().strftime("%m/%d/%Y %H:%M:%S")
-header = [['A1', 'B1', 'C1', 'D1'], ['Date', 'Download', 'Upload', 'Ping']]
+header = [['A1', 'B1', 'C1', 'D1', 'E1'], ['Date', 'Client', 'Download', 'Upload', 'Ping']]
 
 if cliarg.bymonth:
     sheetname = datetime.datetime.now().strftime("%b %Y")
@@ -34,7 +40,6 @@ if cliarg.bymonth:
 download = ''
 upload = ''
 ping = ''
-
 
 def get_credentials():
     """Function to check for valid OAuth access tokens."""
@@ -69,7 +74,7 @@ def submit_into_spreadsheet(download, upload, ping):
             head.value = header[1][index]
             head.update()
 
-    data = [DATE, download, upload, ping]
+    data = [DATE, cliarg.client, download, upload, ping]
 
     sheet.append_table(values=data)
 
